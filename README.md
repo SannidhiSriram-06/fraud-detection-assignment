@@ -79,6 +79,7 @@ upi-anomaly-explainer/
 │   └── transactions.csv    # 15-row mock UPI dataset
 ├── Dockerfile
 ├── requirements.txt
+├── .env.example
 └── .gitignore
 ```
 
@@ -92,7 +93,7 @@ Accepts a CSV file, runs the full agent pipeline, returns a JSON fraud report.
 
 **Request**: `multipart/form-data`, field name `file` (CSV, max 2MB)
 
-**Required CSV columns**: `transaction_id`, `amount`, `timestamp`, `sender_upi`, `receiver_upi`
+**Required CSV columns**: `txn_id`, `timestamp`, `sender_upi`, `receiver_upi`, `amount` (see `sample_data/transactions.csv`; `device_id` and `location` are optional extras present in the sample but not used by the heuristics)
 
 **Response 200**:
 ```json
@@ -114,12 +115,12 @@ Accepts a CSV file, runs the full agent pipeline, returns a JSON fraud report.
 
 ## Sample Data
 
-`sample_data/transactions.csv` contains 15 mock UPI transactions. 10 of 15 are flagged by heuristics in testing. Use it to verify the pipeline end-to-end.
+`sample_data/transactions.csv` contains 15 mock UPI transactions. 10 of 15 are flagged by heuristics (velocity abuse for the `user1@okaxis` burst, large amounts, and odd-hour transactions). Use it to verify the pipeline end-to-end.
 
 ```csv
-transaction_id,amount,timestamp,sender_upi,receiver_upi
-TXN001,49500.00,2024-01-15 02:34:00,user1@upi,merchant99@upi
-TXN002,49800.00,2024-01-15 02:35:00,user1@upi,merchant99@upi
+txn_id,timestamp,sender_upi,receiver_upi,amount,device_id,location
+TXN001,2024-01-15 02:34:11,user1@okaxis,merchant1@okhdfc,150.00,DEV_A1,Mumbai
+TXN007,2024-01-15 03:10:05,user4@okicici,unknown99@okaxis,85000.00,DEV_D4,Chennai
 ...
 ```
 
